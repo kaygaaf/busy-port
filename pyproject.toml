@@ -20,6 +20,11 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
 ]
 
+[project.urls]
+Homepage = "https://github.com/kaygaaf/busy-port"
+Issues = "https://github.com/kaygaaf/busy-port/issues"
+Funding = "https://ko-fi.com/kayorama"
+
 [project.optional-dependencies]
 dev = ["pytest>=7"]
 
