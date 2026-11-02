@@ -7,6 +7,7 @@ import json
 import sys
 from collections.abc import Callable, Sequence
 
+from busy_port import __version__
 from busy_port.lookup import Listener, dedupe, find_listeners
 
 UNKNOWN_PID_NOTE = (
@@ -53,6 +54,11 @@ def build_parser() -> argparse.ArgumentParser:
         "--json",
         action="store_true",
         help="print a JSON list",
+    )
+    parser.add_argument(
+        "--version",
+        action="version",
+        version=f"%(prog)s {__version__}",
     )
     return parser
 

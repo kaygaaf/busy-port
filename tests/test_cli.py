@@ -131,6 +131,13 @@ def test_help_exits_0():
     assert run(["--help"]) == 0
 
 
+def test_version_exits_0(capsys):
+    assert run(["--version"]) == 0
+    out = capsys.readouterr().out
+    assert out.startswith("busy-port ")
+    assert "0.1.0" in out
+
+
 def test_module_entrypoint_bad_args():
     completed = subprocess.run(
         [sys.executable, "-m", "busy_port"],

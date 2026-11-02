@@ -36,6 +36,7 @@ Options:
 
 - `--proto tcp|udp|both` selects the protocol. Default is `tcp`.
 - `--json` prints a JSON list instead of text lines.
+- `--version` prints the package version and exits.
 
 ## Examples
 
