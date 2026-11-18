@@ -9,10 +9,16 @@ Use it when a program cannot bind because something else already has the port. Y
 Requires Python 3.10 or newer. The tool uses the standard library only.
 
 ```bash
+pipx install git+https://github.com/kaygaaf/busy-port
+```
+
+Or from a checkout:
+
+```bash
 python -m pip install .
 ```
 
-From a git checkout:
+For hacking on it:
 
 ```bash
 python -m pip install -e ".[dev]"
@@ -87,4 +93,4 @@ On Windows it runs `netstat -ano` and, when that returns a PID, `tasklist`. This
 
 ## Support
 
-If this helps: https://ko-fi.com/kayorama
+If this helps: [ko-fi.com/kayorama](https://ko-fi.com/kayorama)
