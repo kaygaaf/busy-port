@@ -194,8 +194,8 @@ def command_from_proc(proc_dir: Path) -> str | None:
     return command_basename(comm)
 
 
-def command_from_ps(pid: int, run: Runner) -> str | None:
-    result = run(["ps", "-p", str(pid), "-o", "comm="])
+def command_from_ps(pid: int, run: Runner, ps_format: str = "comm=") -> str | None:
+    result = run(["ps", "-p", str(pid), "-o", ps_format])
     if result.returncode != 0:
         return None
     for line in result.stdout.splitlines():
@@ -445,14 +445,18 @@ def _maybe_int(value: str) -> int | None:
         return None
 
 
-def _attach_ps(listeners: list[Listener], run: Runner) -> list[Listener]:
+def _attach_ps(
+    listeners: list[Listener],
+    run: Runner,
+    ps_format: str = "comm=",
+) -> list[Listener]:
     cache: dict[int, str | None] = {}
     updated: list[Listener] = []
     for item in listeners:
         cmd = item.cmd
         if item.pid is not None:
             if item.pid not in cache:
-                cache[item.pid] = command_from_ps(item.pid, run)
+                cache[item.pid] = command_from_ps(item.pid, run, ps_format)
             ps_cmd = cache[item.pid]
             if ps_cmd:
                 cmd = ps_cmd
@@ -532,7 +536,9 @@ def find_darwin(port: int, proto: str, run: Runner) -> list[Listener]:
     if not saw_lsof:
         detail = "; ".join(failures) if failures else "lsof is not available"
         raise LookupError(detail)
-    return dedupe(_attach_ps(listeners, run))
+    # macOS `ps -o comm=` includes arguments and cuts them off.
+    # ucomm is the process name, and it keeps spaces in app names.
+    return dedupe(_attach_ps(listeners, run, ps_format="ucomm="))
 
 
 def find_windows(port: int, proto: str, run: Runner) -> list[Listener]:

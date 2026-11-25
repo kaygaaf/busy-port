@@ -87,7 +87,7 @@ If the socket is visible but the PID is not, the line uses `pid=?` and `cmd=?`. 
 
 On Linux, busy-port reads `/proc/net/tcp`, `/proc/net/tcp6`, `/proc/net/udp`, and `/proc/net/udp6`. It maps the socket inode to a PID by scanning `/proc/<pid>/fd`. That works without root for processes you own. If those files are missing, it falls back to `ss -lptn` and `ss -lpun`.
 
-On macOS it runs `lsof -nP -iTCP:<port> -sTCP:LISTEN`, and `lsof -nP -iUDP:<port>` for UDP.
+On macOS it runs `lsof -nP -iTCP:<port> -sTCP:LISTEN`, and `lsof -nP -iUDP:<port>` for UDP. The process name comes from `ps -o ucomm=`, so a name like `Google Chrome` stays whole.
 
 On Windows it runs `netstat -ano` and, when that returns a PID, `tasklist`. This path is limited. It expects English `netstat` output, and some sockets still hide the process name.
 

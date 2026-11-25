@@ -287,12 +287,33 @@ def test_darwin_uses_lsof_and_ps():
                 "python3.1 1234 user 3u IPv4 1 0t0 TCP *:8080 (LISTEN)\n",
             )
         if argv[0] == "ps":
-            assert argv == ["ps", "-p", "1234", "-o", "comm="]
-            return CmdResult(0, "/usr/local/bin/python\n")
+            assert argv == ["ps", "-p", "1234", "-o", "ucomm="]
+            return CmdResult(0, "python   \n")
         return CmdResult(127, "", "missing")
 
     found = find_listeners(8080, "tcp", system="darwin", run=run)
     assert found == [Listener(8080, "tcp", "LISTEN", 1234, "python")]
+
+
+def test_darwin_ucomm_keeps_app_names_and_drops_arguments():
+    def run(argv):
+        if argv[0] == "lsof":
+            return CmdResult(
+                0,
+                "COMMAND PID USER FD TYPE DEVICE SIZE/OFF NODE NAME\n"
+                "Google 540 user 95u IPv4 1 0t0 TCP 127.0.0.1:9222 (LISTEN)\n"
+                "redis-ser 846 user 6u IPv4 1 0t0 TCP 127.0.0.1:6379 (LISTEN)\n",
+            )
+        pid = argv[2]
+        assert argv == ["ps", "-p", pid, "-o", "ucomm="]
+        if pid == "540":
+            return CmdResult(0, "Google Chrome   \n")
+        return CmdResult(0, "redis-server   \n")
+
+    found = find_listeners(9222, "tcp", system="darwin", run=run)
+    assert found == [Listener(9222, "tcp", "LISTEN", 540, "Google Chrome")]
+    found = find_listeners(6379, "tcp", system="darwin", run=run)
+    assert found == [Listener(6379, "tcp", "LISTEN", 846, "redis-server")]
 
 
 def test_darwin_keeps_lsof_name_when_ps_fails():
